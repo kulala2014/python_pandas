@@ -666,7 +666,7 @@ row2	0.940658	0.444926	0.305101	2.0	NaN
 row3	0.482586	-1.909210	0.288509	3.0	NaN
 row4	NaN	NaN	NaN	NaN	NaN
 ```
-####删除任何含NaN的行
+#### 删除任何含NaN的行
 dropna 默认删除行,axis=0, how={any, all}; 要想删除列需要设置axis=1
 any:任何含有NaN行或列;all: 所有行或者列都是NaN
 ```python
@@ -702,4 +702,110 @@ row2	0.940658	0.444926	0.305101
 row3	0.482586	-1.909210	0.288509
 row4	1.000000	1.000000	1.000000
 
+```
+
+#### 填充NaN
+```python
+df1 = df.reindex(index=['row1','row2','row3','row4'], columns=list(df.columns) + ['E'])
+df1
+
+#out
+b	a	c	e	E
+row1	0.781701	-0.277362	1.511954	1.0	NaN
+row2	0.940658	0.444926	0.305101	2.0	NaN
+row3	0.482586	-1.909210	0.288509	3.0	NaN
+row4	NaN	NaN	NaN	NaN	NaN
+
+df2.fillna(value=5) #replace NaN with 5
+
+#out
+	b	a	c	e	E
+row1	0.781701	-0.277362	1.511954	5.0	5.0
+row2	0.940658	0.444926	0.305101	5.0	5.0
+row3	0.482586	-1.909210	0.288509	3.0	5.0
+row4	1.000000	1.000000	1.000000	5.0	5.0
+```
+
+#### where语句NaN
+获取NaN的值，如果为NaN, True; else: False
+```python
+df1 = df.reindex(index=['row1','row2','row3','row4'], columns=list(df.columns) + ['E'])
+df1
+
+#out
+b	a	c	e	E
+row1	0.781701	-0.277362	1.511954	1.0	NaN
+row2	0.940658	0.444926	0.305101	2.0	NaN
+row3	0.482586	-1.909210	0.288509	3.0	NaN
+row4	NaN	NaN	NaN	NaN	NaN
+
+pd.isna(df2) # NaN->True;Else->False
+
+#out
+	b	a	c	e	E
+row1	False	False	False	True	True
+row2	False	False	False	True	True
+row3	False	False	False	False	True
+row4	False	False	False	True	True
+```
+
+## DataFrame Operations
+操作通常排除丢失的数据。
+```python
+df = pd.DataFrame(np.random.randn(3,3), columns=['b', 'a','c'], index=['row1', 'row2', 'row3'])
+#out
+
+	b	a	c
+row1	0.680541	-0.485404	0.022410
+row2	0.521382	1.008719	-0.473681
+row3	-0.873195	0.771257	-0.973217
+```
+### 执行pd.describe 函数
+#### 1.df.mean()
+求df的列上的平均值，默认axis=0;如果要求行上的平均值，axis=1
+```python
+df.mean() #求列的平均值
+
+#out
+b    0.734981
+a   -0.580549
+c    0.701855
+e    2.000000
+dtype: float64
+
+df.mean(1) #求行的平均值
+
+#out
+row1    0.754073
+row2    0.922671
+row3    0.465471
+dtype: float64
+```
+#### 2.df.sub()
+对应index相减。
+shift默认向下移动value,用nan补充新的位置。
+```python
+s = pd.Series([1,2,3], index=['row1','row2','row3'])
+
+#out
+row1    1
+row2    2
+row3    3
+dtype: int64
+
+s = s.shift(2) #s的value向下移动
+
+#out
+row1    NaN
+row2    NaN
+row3    1.0
+dtype: float64
+
+df.sub(s, axis='index')
+
+#out
+b	a	c	e
+row1	NaN	NaN	NaN	NaN
+row2	NaN	NaN	NaN	NaN
+row3	-0.517414	-2.90921	-0.711491	2.0
 ```
