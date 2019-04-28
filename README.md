@@ -618,3 +618,88 @@ row1	0.680541	-0.485404	5	5
 row2	0.521382	1.008719	5	2
 row3	-0.873195	0.771257	5	3
 ```
+
+###### 使用where 设置值
+```python
+df2 = df.copy()
+df2[df2>1] = 1 # 设置c列的所以值新Series
+df
+#out
+
+b	a	c	e
+row1	0.781701	0.277362	1.000000	1.0
+row2	0.940658	0.444926	0.305101	1.0
+row3	0.482586	1.000000	0.288509	1.0
+```
+###### 使用drop删除列或者行
+默认情况下，drop删除的是行，axis=0;需要删除列，axis=1
+```python
+df2 = df.copy()
+df3.drop('row1') # 删除row1行
+df
+
+#out
+b	a	c	e
+row2	0.940658	0.444926	0.305101	2
+row3	0.482586	-1.909210	0.288509	3
+
+df3.drop('e', axis=1) # 删除e列
+
+#out
+b	a	c
+row2	0.940658	0.444926	0.305101
+row3	0.482586	-1.909210	0.288509
+```
+
+### Missing Data
+pandas主要使用值np.nan来表示缺失的数据。 默认情况下，它不包含在计算中。
+Reindexing允许您更改/添加/删除指定轴上的索引。 这将返回数据的副本。
+
+```python
+df1 = df.reindex(index=['row1','row2','row3','row4'], columns=list(df.columns) + ['E'])
+df1
+
+#out
+b	a	c	e	E
+row1	0.781701	-0.277362	1.511954	1.0	NaN
+row2	0.940658	0.444926	0.305101	2.0	NaN
+row3	0.482586	-1.909210	0.288509	3.0	NaN
+row4	NaN	NaN	NaN	NaN	NaN
+```
+####删除任何含NaN的行
+dropna 默认删除行,axis=0, how={any, all}; 要想删除列需要设置axis=1
+any:任何含有NaN行或列;all: 所有行或者列都是NaN
+```python
+df2 = df1.copy()
+df2.dropna(how='any') #删除任何含NaN的行
+#out
+b	a	c	e	E
+row1	0.781701	-0.277362	1.511954	1.0	1.0
+row2	0.940658	0.444926	0.305101	2.0	1.0
+
+df2.dropna(how='all') #删除所有值都是NaN的行
+#out
+b	a	c	e	E
+row1	0.781701	-0.277362	1.511954	1.0	1.0
+row2	0.940658	0.444926	0.305101	2.0	1.0
+row3	0.482586	-1.909210	0.288509	3.0	NaN
+
+df2.dropna(axis=1, how='all') #删除所有的值都是NaN的列
+
+#out
+b	a	c	e
+row1	0.781701	-0.277362	1.511954	NaN
+row2	0.940658	0.444926	0.305101	NaN
+row3	0.482586	-1.909210	0.288509	3.0
+row4	NaN	NaN	NaN	NaN
+
+df2.dropna(axis=1, how='any') #删除任何含有NaN的列
+
+#out
+b	a	c
+row1	0.781701	-0.277362	1.511954
+row2	0.940658	0.444926	0.305101
+row3	0.482586	-1.909210	0.288509
+row4	1.000000	1.000000	1.000000
+
+```
