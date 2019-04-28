@@ -809,3 +809,83 @@ row1	NaN	NaN	NaN	NaN
 row2	NaN	NaN	NaN	NaN
 row3	-0.517414	-2.90921	-0.711491	2.0
 ```
+#### Apply
+Apply functions to data:
+
+```python
+b	a	c	e	E
+row1	0.781701	-0.277362	1.511954	1.0	1.0
+row2	0.940658	0.444926	0.305101	2.0	1.0
+row3	0.482586	-1.909210	0.288509	3.0	0.0
+row4	0.000000	0.000000	0.000000	0.0	0.0
+
+
+df.apply(np.cumsum) #np.cumsum 累加
+
+#out
+b	a	c	e	E
+row1	0.781701	-0.277362	1.511954	1.0	1.0
+row2	1.722359	0.167563	1.817055	3.0	2.0
+row3	2.204944	-1.741647	2.105564	6.0	2.0
+row4	2.204944	-1.741647	2.105564	6.0	2.0
+
+df1.apply(lambda x: x.max() - x.min())
+
+#out
+b    0.940658
+a    2.354136
+c    1.511954
+e    3.000000
+E    1.000000
+dtype: float64
+```
+
+### Histogramming statistics
+直方图数据统计
+```python
+s = pd.Series(np.random.randint(0, 7, size=10))
+
+#out
+0    4
+1    2
+2    1
+3    2
+4    6
+5    4
+6    4
+7    6
+8    4
+9    4
+
+s.value_counts() #统计各个value出现的次数
+#out
+4    5
+6    2
+2    2
+1    1
+dtype: int64
+```
+
+### 字符串函数
+dataFrame的值转为str后可以使用几乎所有的python字符串函数。
+```python
+s = pd.Series(['A', 'B', 'C', 'Aaba', 'Baca', np.nan, 'CABA', 'dog', 'cat'])
+
+s.str.lower()
+
+#out
+0       a
+1       b
+2       c
+3    aaba
+4    baca
+5     NaN
+6    caba
+7     dog
+8     cat
+dtype: object
+```
+
+
+## DataFrame Merge
+https://www.pypandas.cn/document/10min.html
