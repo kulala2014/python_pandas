@@ -1334,4 +1334,106 @@ a	b	c	d
 ```
 
 ## Pivot Tables
+pandas可以完美的支持数据透视表，不过在处理前必须熟悉你的数据。
+```pyhton
+df = pd.DataFrame({'A' : ['one', 'one', 'two', 'three'] * 3,
+                   'B' : ['A', 'B', 'C'] * 4,
+                    'C' : ['foo', 'foo', 'foo', 'bar', 'bar', 'bar'] * 2,
+                   'D' : np.random.randn(12),
+                    'E' : np.random.randn(12)})
+#out
+A	B	C	D	E
+0	one	A	foo	-0.782157	-0.515498
+1	one	B	foo	-1.145140	0.374267
+2	two	C	foo	-0.021456	1.258766
+3	three	A	bar	-0.960431	1.228613
+4	one	B	bar	0.351783	0.450405
+5	one	C	bar	1.497917	0.925869
+6	two	A	foo	0.023811	-0.930414
+7	three	B	foo	-2.823804	-0.276830
+8	one	C	foo	-1.083404	0.574091
+9	one	A	bar	0.761335	-1.425865
+10	two	B	bar	1.206836	0.320645
+11	three	C	bar	0.128186	1.280892
 
+pd.pivot_table(df, values='D', index=['A', 'B'], columns=['C'])
+
+#out
+	C	bar		foo
+A	B		
+one	A	0.761335	-0.782157
+	B	0.351783	-1.145140
+	C	1.497917	-1.083404
+three	A	-0.960431	NaN
+	B	NaN		-2.823804
+	C	0.128186	NaN
+two	A	NaN		0.023811
+	B	1.206836	NaN
+	C	NaN		-0.021456
+```
+
+## Categoricals
+pandas可以在DataFrame中包含分类数据.
+
+```pyhton
+df = pd.DataFrame({"id":[1,2,3,4,5,6], "raw_grade":['a', 'b', 'b', 'a', 'a', 'e']})
+#out
+id	raw_grade
+0	1	a
+1	2	b
+2	3	b
+3	4	a
+4	5	a
+5	6	e
+
+#将以raw_grade列创建新的列的数据类型修改为Categoricals
+df["grade"] = df["raw_grade"].astype("category")
+
+#out
+	id	raw_grade	grade
+0	1	a	a
+1	2	b	b
+2	3	b	b
+3	4	a	a
+4	5	a	a
+5	6	e	e
+
+#将类别重命名为更有意义的名称（分配给Series.cat.categories is inplace！）
+df["grade"].cat.categories = ["very good", "good", "very bad"]
+
+#重新排序类别并同时添加缺少的类别（Series .cat下的方法默认返回一个新系列）。
+df["grade"] = df["grade"].cat.set_categories(["very bad", "bad", "medium", "good", "very good"])
+
+df["grade"]
+#out
+0    very good
+1         good
+2         good
+3    very good
+4    very good
+5     very bad
+Name: grade, dtype: category
+Categories (5, object): [very bad, bad, medium, good, very good]
+
+#排序是按类别中的每个顺序排序，而不是词汇顺序。
+df.sort_values(by="grade")
+
+#out
+   id raw_grade      grade
+5   6         e   very bad
+1   2         b       good
+2   3         b       good
+0   1         a  very good
+3   4         a  very good
+4   5         a  very good
+
+#按分类列分组还显示统计值
+df.groupby("grade").size()
+#out
+very bad     1
+bad          0
+medium       0
+good         2
+very good    3
+dtype: int64
+```
